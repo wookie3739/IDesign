@@ -14,6 +14,7 @@
         height: 100vh;
       }
       #hud-icon {
+        display: none;
         position: absolute;
         bottom: 20px;
         right: 20px;
@@ -27,12 +28,33 @@
           cursor: pointer;
         }
       }
+
+      #canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      #frame-btns {
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+      }
     </style>
 
     <!-- <script type="module" src="./src/main.js" defer></script> -->
     <script src="bundle.js"></script>
+    <!-- <script src="./src/main.js" type="module"></script> -->
   </head>
   <body>
+    <div id="frame-btns">
+      <button name="room">방만들기</button>
+    </div>
+    <canvas id="canvas" />
     <div id="hud-icon">
       <button>책상</button>
       <button>바닥</button>

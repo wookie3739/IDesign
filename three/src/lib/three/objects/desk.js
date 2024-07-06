@@ -1,5 +1,5 @@
 import * as THREE from "../three.module.js";
-import { deskColor } from "./colors.js";
+import { deskColor } from "../objectConf/colors.js";
 
 class Desk {
   constructor({

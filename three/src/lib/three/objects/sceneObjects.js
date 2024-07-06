@@ -1,13 +1,12 @@
-import * as THREE from "../three.module";
-import { Floor } from "./floor";
-import { groundName, wrapperName } from "./objectNames";
+import { groundName } from "../objectConf/objectNames";
+import * as THREE from "../three.module.js";
+import { Room } from "./Room";
 
 class InitObjects {
   constructor() {
     return {
-      initGround: this.createGround(),
-      initFloor: this.createInitFloor(),
-      axeshelper: this.createAxesHelper(),
+      initRoom: new Room({}),
+      axesHelper: this.createAxesHelper(),
     };
   }
 
@@ -15,7 +14,7 @@ class InitObjects {
     return new THREE.AxesHelper(1000);
   };
   createGround = () => {
-    const initGround = new Floor({
+    const initGround = new Room({
       x: 0,
       y: -1,
       z: 0,
@@ -28,7 +27,7 @@ class InitObjects {
   };
 
   createInitFloor = () => {
-    return new Floor({});
+    // return new Floor({});
     // const a = new Floor();
     // console.log(a);
   };

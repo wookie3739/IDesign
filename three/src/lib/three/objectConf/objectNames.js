@@ -5,8 +5,10 @@ const deskName = "desk";
 const roomName = "room";
 const shadowName = "shadow";
 const groundName = "ground";
+const resizerName = "resizer";
 
 export {
+  resizerName,
   groundName,
   shadowName,
   floorName,

@@ -132,4 +132,5 @@ q:after {
 table {
   border-collapse: collapse;
   border-spacing: 0;
+  /* background-color: rgb(215, 63, 63) */
 }
