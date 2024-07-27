@@ -75,13 +75,21 @@ public class MypageService {
     	
     	userEntity.setUName(UName);
     	if(profile != null) {
+    		String deleteGCSFileName = userEntity.getUPofile();
+    		gcsFileDeleter.deleteFile(deleteGCSFileName);
     		userEntity.setUPofile(profile);
     	}
     	userEntity.setUBirth(UBirth);
     	userEntity.setUMail(UMail);
     	userEntity.setUTel(UTel);
     	userRepository.save(userEntity);
+    }
+    
+    public void deleteUser(Long uNo) {
+    	UserEntity userEntity = userRepository.findById(uNo).orElse(null);
     	
+    	String deleteGCSFileName = userEntity.getUPofile();
+    	gcsFileDeleter.deleteFile(deleteGCSFileName);
     	
     }
 

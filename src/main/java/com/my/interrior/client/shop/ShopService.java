@@ -64,7 +64,6 @@ public class ShopService {
 		String userId = (String) session.getAttribute("UId");
 		// 폴더 생성을 위해 user_ + 세션값으로 받기
 		String folderName = "user_" + userId;
-		String shopName = "shop_" + shopTitle;
 		// 경로설정 폴더이름 /uuid-원래 파일이름
 		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 		BlobId blobId = BlobId.of(bucketName, fileName);
@@ -163,6 +162,9 @@ public class ShopService {
 		return shopRepository.findById(shopNo);
 	}
 
+	public List<ShopEntity> getCartsFromShop(List<Long> shopNos){
+		return shopRepository.findByShopNoIn(shopNos);
+	}
 	public List<ShopPhotoEntity> getShopPhotoById(Long shopNo) {
 
 		List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByShopEntity_ShopNo(shopNo);
@@ -181,34 +183,6 @@ public class ShopService {
 		return shopOptionRepository.findAll();
 	}
 
-	public void inCart(List<Long> optionValueIds, Long shopNo, int quantity) {
-
-		ShopEntity shopNO = shopRepository.findById(shopNo)
-				.orElseThrow(() -> new RuntimeException("Shop not found with id: " + shopNo));
-		;
-		String userId = (String) session.getAttribute("UId");
-
-		UserEntity userEntity = userRepository.findByUId(userId);
-		CartEntity cartEntity = new CartEntity();
-		cartEntity.setQuantity(quantity);
-		cartEntity.setUserEntity(userEntity);
-		cartEntity.setShopEntity(shopNO);
-
-		List<CartOptionEntity> cartOptions = new ArrayList<>();
-
-		for (Long id : optionValueIds) {
-		    ShopOptionValueEntity optionValue = shopOptionValueRepository.findById(id)
-		        .orElseThrow(() -> new RuntimeException("Option value not found: " + id));
-		    
-		    CartOptionEntity cartOption = new CartOptionEntity();
-		    cartOption.setCartEntity(cartEntity);
-		    cartOption.setShopOptionValueEntity(optionValue);
-		    
-		    cartOptions.add(cartOption);
-		}
-		cartEntity.setCartOptions(cartOptions);
-		cartRepository.save(cartEntity);
-
-	}
+	
 
 }

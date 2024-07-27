@@ -3,12 +3,16 @@ package com.my.interrior.client.gcs;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GCSFileDeleter {
 
     private final Storage storage;
+    
+    @Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
 
     @Autowired
     public GCSFileDeleter(Storage storage) {
@@ -17,10 +21,13 @@ public class GCSFileDeleter {
 
     public void deleteFile(String fileUrl) {
         // URL에서 객체 이름과 폴더 이름 추출
-        String[] urlParts = fileUrl.split("/", 4);
-        String bucketName = urlParts[2];  // 버킷 이름은 URL의 3번째 부분
-        String objectName = urlParts[3];  // 객체 이름은 URL의 4번째 부분
-
+    	String[] urlParts = fileUrl.split("/", 5);
+        if (urlParts.length < 4) {
+            throw new IllegalArgumentException("Invalid URL format: " + fileUrl);
+        }
+        
+        String objectName = urlParts[4];
+        System.out.println("오브젝트 이름 :  " + objectName );
         // BlobId 생성
         BlobId blobId = BlobId.of(bucketName, objectName);
 

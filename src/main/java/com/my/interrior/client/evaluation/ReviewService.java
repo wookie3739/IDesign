@@ -167,6 +167,8 @@ public class ReviewService {
 	    review.setRContent(content);
 	    review.setRStarRating(starRating);
 	    if(mainPhotoUrl != null) {
+	    	String deletephoto = review.getRMainPhoto();
+	    	gcsFileDeleter.deleteFile(deletephoto);
 	    	review.setRMainPhoto(mainPhotoUrl);
 	    }
 	    // 리뷰 저장
@@ -201,5 +203,18 @@ public class ReviewService {
 	        reviewPhotoRepository.saveAll(reviewPhotos);
 	    }
 		
+	}
+	public void deleteReview(Long rNo) {
+		ReviewEntity reviewEntity = reviewRepository.findById(rNo).orElse(null);
+		
+		String deleteGCSFileName = reviewEntity.getRMainPhoto();
+		gcsFileDeleter.deleteFile(deleteGCSFileName);
+		List<ReviewPhotoEntity> reviewPhotoDel = reviewPhotoRepository.findByReview_RNo(rNo);
+        for(ReviewPhotoEntity photo : reviewPhotoDel) {
+        	gcsFileDeleter.deleteFile(photo.getRpPhoto());
+        }
+        reviewPhotoRepository.deleteByReviewRNo(rNo);
+        
+        reviewRepository.deleteById(rNo);
 	}
 }

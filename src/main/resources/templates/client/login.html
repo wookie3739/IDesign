@@ -227,6 +227,14 @@
       // 페이지 로드 시 알림창 표시
       window.onload = function () {
         var errorMessage = document.querySelector(".error-message");
+		var cartMsg = /*[[${cartMsg}]]*/'';
+		
+		if(cartMsg){
+				alert(cartMsg);
+				window.location.href='/auth/login';
+			
+		}
+		
         if (errorMessage && errorMessage.innerText.trim() !== "") {
           alert(errorMessage.innerText.trim());
         }

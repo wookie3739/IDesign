@@ -128,5 +128,11 @@ public class ReviewController {
 		return "redirect:/auth/evaluation";
 	}
 	
+	@PostMapping("/review_delete")
+	public String reviewDelete(@RequestParam("rNo") Long rNo) {
+		reviewService.deleteReview(rNo);
+		return "redirect:/auth/evaluation";
+	}
+	
 	
 }

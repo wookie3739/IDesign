@@ -19,7 +19,7 @@
 </head>
 <body>
 	<h1>Write a Review</h1>
-    <form action="/review_write" method="post" enctype="multipart/form-data">
+    <form id="reviewForm" action="/review_write" method="post" enctype="multipart/form-data">
     <label for="title">리뷰 제목:</label>
     <input type="text" id="title" name="title" placeholder="리뷰 제목"><br><br>
     
@@ -82,6 +82,44 @@
                 fileInput.files = dataTransfer.files;
             }
         });
+		//입력을 하지 않았을때 의 경고 메세지를 출력하는 js
+		reviewForm.addEventListener('submit', (event) => {
+		            const title = document.getElementById('title').value.trim();
+		            const category = document.getElementById('category').value.trim();
+		            const content = document.getElementById('content').value.trim();
+		            const starRating = document.getElementById('starRating').value.trim();
+		            const mainPhotoUp = document.getElementById('mainPhotoUp').files.length;
+		            
+		            if (!title) {
+		                alert('리뷰 제목을 입력해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!category) {
+		                alert('리뷰 카테고리를 선택해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!content) {
+		                alert('리뷰 내용을 입력해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!starRating) {
+		                alert('별점을 선택해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (mainPhotoUp === 0) {
+		                alert('썸네일 사진을 업로드해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+		        });
     </script>
 </body>
 </html>

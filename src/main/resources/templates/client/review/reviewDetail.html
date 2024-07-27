@@ -1,90 +1,125 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Review Detail</title>
-    <style>
-        .container {
-            width: 90.4%;
-            display: flex;
-            margin: 0 auto;
-        }
-        .left-column {
-            width: 50%;
-        }
-        .right-column {
-            width: 50%;
-            padding-left: 20px;
-        }
-        .right-column .header {
-            display: flex;
-            justify-content: space-between;
-        }
-        .right-column .content {
-            margin-top: 20px;
-        }
-        .photos {
-            margin-top: 20px;
-        }
-        .photos img {
-            max-width: 100%;
-            height: auto;
-        }
-        .r_profile {
-			width : 50px;
-			height : 50px;
+	<meta charset="UTF-8">
+	<title>Review Detail</title>
+	<style>
+		.container {
+			width: 90.4%;
+			display: flex;
+			margin: 0 auto;
 		}
-    </style>
-    <script type="text/javascript">
-        function updateReview(rNo) {
-            var baseUrl = '/review/reviewUpdate';
-            var url = baseUrl + '/' + rNo;
-            window.location.href = url;
-        }
-    </script>
+
+		.left-column {
+			width: 50%;
+		}
+
+		.right-column {
+			width: 50%;
+			padding-left: 20px;
+		}
+
+		.right-column .header {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.right-column .content {
+			margin-top: 20px;
+		}
+
+		.photos {
+			margin-top: 20px;
+		}
+
+		.photos img {
+			max-width: 100%;
+			height: auto;
+		}
+
+		.r_profile {
+			width: 50px;
+			height: 50px;
+		}
+	</style>
+	<script type="text/javascript">
+		function updateReview(rNo) {
+			var baseUrl = '/review/reviewUpdate';
+			var url = baseUrl + '/' + rNo;
+			window.location.href = url;
+		}
+
+		async function deleteReview(rNo) {
+			if (confirm("정말로 리뷰를 삭제하시겠습니까?")) {
+				const response = await fetch("/review_delete", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					body: new URLSearchParams({rNo: rNo})
+				});
+
+				if (response.ok) {
+					// 리뷰 삭제가 성공한 경우, 리뷰 목록 페이지로 리디렉션
+					window.location.href = "/auth/evaluation";
+				} else {
+					// 리뷰 삭제가 실패한 경우, 에러 메시지 표시
+					alert("Failed to delete the review.");
+				}
+			}
+		}
+	</script>
 </head>
+
 <body>
 	<div class="container">
-        <div class="left-column">
-            <!-- 사진들 -->
-            <div class="photos">
-                <h3>Review Photos</h3>
-                <div th:if="${#lists.isEmpty(reviewPhoto)}">
-                    <p>No photos available.</p>
-                </div>
-                <div th:each="photo : ${reviewPhoto}">
-                    <img th:src="${photo.RpPhoto}" alt="Review Photo">
-                    <p>Photo ID: <span th:text="${photo.RpNo}"></span></p>
-                    <p>Photo URL: <span th:text="${photo.RpPhoto}"></span></p>
-                </div>
-            </div>
-        </div>
-        <div class="right-column">
-            <div class="header">
-                <!-- 카테고리, 제목 -->
-                <div>
-                    <p><strong>Category:</strong> <span th:text="${review.RCategory}"></span></p>
-                    <p><strong>Title:</strong> <span th:text="${review.RTitle}"></span></p>
-                </div>
-                <!-- 별점, 프로필 -->
-                <div>
-                    <p><strong>Star Rating:</strong> <span th:text="${review.RStarRating}"></span></p>
-                    <p><strong>프로필 사진:</strong> <span><!--<img class="r_profile" th:src="${review.RProfile}" alt="Main Photo"></span>--></p>
-                </div>
-            </div>
-            <!-- 내용 -->
-            <div class="content">
-                <p><strong>Content:</strong> <span th:text="${review.RContent}"></span></p>
-                <!-- 조회수, 작성시간 -->
-                <p><strong>Views:</strong> <span th:text="${review.RViews}"></span></p>
-                <p><strong>Written Time:</strong> <span th:text="${review.RWrittenTime}"></span></p>
-            </div>
-            
-            <div class="updatebutton">
-				<button type="button" th:onclick="'updateReview(' + ${review.rNo} + ')'">Update</button>
+		<div class="left-column">
+			<!-- 사진들 -->
+			<div class="photos">
+				<h3>Review Photos</h3>
+				<div th:if="${#lists.isEmpty(reviewPhoto)}">
+					<p>No photos available.</p>
+				</div>
+				<div th:each="photo : ${reviewPhoto}">
+					<img th:src="${photo.RpPhoto}" alt="Review Photo">
+					<p>Photo ID: <span th:text="${photo.RpNo}"></span></p>
+					<p>Photo URL: <span th:text="${photo.RpPhoto}"></span></p>
+				</div>
 			</div>
-        </div>
-    </div>
-    <a href="/auth/evaluation" th:href="@{/auth/evaluation}">후기 리스트로</a>
+		</div>
+		<div class="right-column">
+			<div class="header">
+				<!-- 카테고리, 제목 -->
+				<div>
+					<p><strong>Category:</strong> <span th:text="${review.RCategory}"></span></p>
+					<p><strong>Title:</strong> <span th:text="${review.RTitle}"></span></p>
+				</div>
+				<!-- 별점, 프로필 -->
+				<div>
+					<p><strong>Star Rating:</strong> <span th:text="${review.RStarRating}"></span></p>
+					<p><strong>프로필 사진:</strong>
+						<span><!--<img class="r_profile" th:src="${review.RProfile}" alt="Main Photo"></span>--></p>
+				</div>
+			</div>
+			<!-- 내용 -->
+			<div class="content">
+				<p><strong>Content:</strong> <span th:text="${review.RContent}"></span></p>
+				<!-- 조회수, 작성시간 -->
+				<p><strong>Views:</strong> <span th:text="${review.RViews}"></span></p>
+				<p><strong>Written Time:</strong> <span th:text="${review.RWrittenTime}"></span></p>
+			</div>
+			<div th:if="${session.UId} != null">
+				<div class="updatebutton">
+					<button type="button" th:onclick="'updateReview(' + ${review.rNo} + ')'">Update</button>
+				</div>
+				<div class="deleteButton">
+					<button type="button" th:onclick="'deleteReview(' + ${review.rNo} + ')'">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="/auth/evaluation" th:href="@{/auth/evaluation}">후기 리스트로</a>
 </body>
+
 </html>

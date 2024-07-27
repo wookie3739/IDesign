@@ -88,22 +88,6 @@ public class ShopController {
 	
     	return "client/shop/shopDetail";
     }
-    @PostMapping("/cart")
-    public String goCart(
-    		@RequestParam("shopNo") Long shopNo,
-    		@RequestParam("options") List<Long> optionValueIds,
-    		@RequestParam("quantity") int quantity, HttpSession session) {
-    	
-    	String userId = (String) session.getAttribute("UId");
-    	
-    	if(userId == null) {
-    		return "redirect:/auth/login";
-    	}
-    	
-    	shopService.inCart(optionValueIds, shopNo, quantity);
-
-    	return "client/shop/shopList";
-    }
     
     @GetMapping("/shop/shopUpdate/{shopNo}")
     public String shopUpdate(Pageable pageable, Model model, @PathVariable("shopNo") Long shopNo) {

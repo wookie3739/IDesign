@@ -27,6 +27,8 @@
 					<a href="/auth/login" class="login" th:if="${session.UId} == null">로그인</a>
 					<span class="line" th:if="${session.UId} == null"></span>
 					<a href="/auth/join" class="memberJoin" th:if="${session.UId} == null">회원가입</a>
+					<a href="/my/cart" th:if="${session.UId} != null">장바구니ICON</a>
+					<span class="line" th:if="${session.UId} != null"></span>
 					<a href="/logout" th:if="${session.UId} != null">로그아웃</a>
 					<span class="line" th:if="${session.UId} != null"></span>
 					<a href="/mypage/mypage" th:if="${session.UId} != null">마이페이지</a>

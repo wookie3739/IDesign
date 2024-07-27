@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>상품 상세 페이지</title>
 	<link rel="stylesheet" href="/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -26,7 +27,7 @@
 				<p th:text="${shops.shopCategory}"></p>
 
 				<h3>옵션</h3>
-				<form action="/cart" method="post" id="cartForm">
+				<form action="/auth/cart" method="post" id="cartForm">
 					<input type="hidden" name="shopNo" th:value="${shops.shopNo}">
 					<div class="options" th:each="option : ${shopOption}">
 						<label th:text="${option.shopOptionName}"></label>
@@ -53,6 +54,35 @@
 		<!-- 뒤로가기 버튼 -->
 		<a href="#" onclick="history.back()">뒤로가기</a>
 	</div>
+	<script>
+		$(document).ready(function () {
+			$('#cartForm').on('submit', function (event) {
+				event.preventDefault();
+
+				$.ajax({
+					type: 'POST',
+					url: '/auth/cart',
+					data: $(this).serialize(),
+					success: function (res) {
+						//장바구니로 이동? ㄴㄴ?
+
+						if (confirm(res)) {
+							window.location.href = '/my/cart';
+						}
+					},
+					//로그인 페이지로 이동? ㄴㄴ?
+					error: function (xhr, status, error) {
+						if (xhr.status == 401) {
+							var msg = xhr.responseText;
+							if (confirm(msg)) {
+								window.location.href = '/auth/login';
+							}
+						}
+					}
+				});
+			})
+		})
+	</script>
 </body>
 
 </html>

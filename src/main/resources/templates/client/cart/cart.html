@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>cart</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<style>
+		/* Reset some default styles */
+		body,
+		h1,
+		h2,
+		p,
+		button {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			color: #333;
+		}
+
+		.container {
+			width: 80%;
+			margin: 0 auto;
+			padding: 20px;
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.header {
+			border-bottom: 2px solid #eee;
+			padding-bottom: 10px;
+			margin-bottom: 20px;
+		}
+
+		.header h1 {
+			font-size: 24px;
+			color: #333;
+		}
+
+		.main-content {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.cart-item {
+			display: flex;
+			align-items: center;
+			border-bottom: 1px solid #eee;
+			padding: 10px 0;
+		}
+
+		.product-image {
+			width: 80px;
+			height: 80px;
+			object-fit: cover;
+			border-radius: 4px;
+			margin-right: 20px;
+		}
+
+		.product-details {
+			flex: 1;
+		}
+
+		.product-title {
+			font-size: 18px;
+			color: #333;
+			margin-bottom: 5px;
+		}
+
+		.product-price {
+			font-size: 16px;
+			color: #777;
+			margin-bottom: 10px;
+		}
+
+		.remove-button {
+			padding: 6px 12px;
+			font-size: 14px;
+			color: #fff;
+			background-color: #e74c3c;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.remove-button:hover {
+			background-color: #c0392b;
+		}
+
+		.checkout {
+			margin-top: 20px;
+			padding: 10px;
+			border-top: 1px solid #eee;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.total {
+			font-size: 18px;
+			color: #333;
+		}
+
+		.total-price {
+			font-weight: bold;
+		}
+
+		.checkout-button {
+			padding: 10px 20px;
+			font-size: 16px;
+			color: #fff;
+			background-color: #3498db;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.checkout-button:hover {
+			background-color: #2980b9;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>장바구니</h1>
+		</div>
+		<div class="main-content">
+			<div class="cart-item" th:each="cartEntity, iterStat : ${cartEntities}">
+				<img class="product-image" th:src="${cartEntity.shopEntity.shopMainPhoto}" alt="상품 이미지" />
+				<div class="product-details">
+					<p class="product-title" th:text="${cartEntity.shopEntity.shopTitle}"></p>
+					<p class="product-price">가격 : <span th:text="${cartEntity.shopEntity.shopPrice}"></span></p>
+					<p class="product-quantity">수량 : <span th:text="${cartEntity.quantity}"></span></p>
+					<div class="product-options">
+						<p>
+							옵션:<span th:text="${shopOptionValues[iterStat.index].shopOptionValue}"></span>
+						</p>
+					</div>
+				</div>
+				<button class="remove-button" onclick="removeItem()">삭제</button>
+			</div>
+		</div>
+		<div class="checkout">
+			<p class="total">총 가격: <span th:text="'₩ ' + ${total} + '원'"></span></span>
+			</p>
+			<button class="checkout-button">구매하기</button>
+		</div>
+	</div>
+</body>
+
+</html>
