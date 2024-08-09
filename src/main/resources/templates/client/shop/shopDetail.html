@@ -7,6 +7,70 @@
 	<title>상품 상세 페이지</title>
 	<link rel="stylesheet" href="/css/style.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<style>
+		/* 작은 이미지 스타일 */
+		.review-thumbnail {
+			width: 150px;
+			height: 150px;
+			object-fit: cover;
+			cursor: pointer;
+			margin: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			transition: transform 0.2s;
+		}
+
+		.review-thumbnail:hover {
+			transform: scale(1.05);
+		}
+
+		/* 리뷰 사진 컨테이너 */
+		.review-photos {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+		}
+
+		/* 모달 창 스타일 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgb(0, 0, 0);
+			background-color: rgba(0, 0, 0, 0.9);
+		}
+
+		.modal-content {
+			margin: 15% auto;
+			display: block;
+			width: 80%;
+			max-width: 700px;
+		}
+
+		/* 모달 창 닫기 버튼 스타일 */
+		.close {
+			position: absolute;
+			top: 15px;
+			right: 35px;
+			color: #fff;
+			font-size: 40px;
+			font-weight: bold;
+			transition: 0.3s;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: #bbb;
+			text-decoration: none;
+			cursor: pointer;
+		}
+	</style>
 </head>
 
 <body>
@@ -16,7 +80,6 @@
 			<div class="left">
 				<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
 			</div>
-
 			<!-- 오른쪽: 상품 정보 -->
 			<div class="right">
 				<h1 th:text="${shops.shopTitle}"></h1>
@@ -41,20 +104,6 @@
 					<label for="quantity">수량:</label>
 					<input type="number" id="quantity" name="quantity" value="1" min="1">
 					<button type="submit">장바구니에 담기</button>
-					<input type="hidden" name="shopNo" th:value="${shops.shopNo}">
-					<div class="options" th:each="option : ${shopOption}">
-						<label th:text="${option.shopOptionName}"></label>
-						<select name="options[__${option.shopOptionNo}__]" required>
-							<option selected disabled>Select an option</option>
-							<option th:each="value : ${option.shopOptionValues}"
-								th:value="${value.shopOptionValue} + ':' + ${value.shopOptionPrice}"
-								th:text="${value.shopOptionValue} + ' (₩' + ${value.shopOptionPrice} + ')'">
-                            </option>
-                        </select>
-                    </div>
-				 <label for=" quantity">수량:</label>
-								<input type="number" id="quantity" name="quantity" value="1" min="1">
-								<button type="submit">장바구니에 담기</button>
 				</form>
 			</div>
 		</div>
@@ -64,32 +113,96 @@
 					class="description-image">
 			</div>
 		</div>
+		<div class="">
+			<div>
+				<a th:href="@{/shopReview/{shopNo}(shopNo=${shops.shopNo})}" class="product-link">
+					<h3>리뷰작성하기</h3>
+				</a>
+			</div>
+		</div>
+		<div>
+			<h3>리뷰</h3>
+			<div th:each="review : ${shopReviews}">
+				<div>
+					<p th:text="${review.shopReviewContent}"></p>
+					<p>별점: <span th:text="${review.shopReviewStarRating}"></span></p>
+					<p>작성자: <span th:text="${review.user.UName}"></span></p>
+					<p>작성일: <span
+							th:text="${review.shopReviewCreated != null ? #temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
+					</p>
+
+					<!-- 리뷰 사진 표시 -->
+					<div class="review-photos">
+						<div th:each="photo : ${reviewPhotosMap[review.shopReviewNo]}">
+							<img th:src="@{${photo.shopReviewPhotoUrl}}" alt="Review Photo" class="review-thumbnail"
+								onclick="openModal(this)">
+						</div>
+					</div>
+
+					<!-- 리뷰 삭제 버튼 -->
+
+					<button type="button" th:if="${session.UId} == ${review.user.UId}"
+						th:attr="onclick=|deleteReview(${review.shopReviewNo})|">삭제</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 모달 창 -->
+		<div id="myModal" class="modal">
+			<span class="close" onclick="closeModal()">&times;</span>
+			<img class="modal-content" id="img01">
+		</div>
 
 		<!-- 뒤로가기 버튼 -->
 		<a href="#" onclick="history.back()">뒤로가기</a>
 	</div>
 	<script>
-		$(document).ready(function(){
-			$('#cartForm').on('submit', function(event){
-				event.preventDefault();
-				
-				$.ajax({
-					type:'POST',
-					url:'/auth/cart',
-					data:$(this).serialize(),
-					success:function(res){
-						//장바구니로 이동? ㄴㄴ?
+		function openModal(element) {
+			var modal = document.getElementById("myModal");
+			var modalImg = document.getElementById("img01");
+			modal.style.display = "block";
+			modalImg.src = element.src;
+		}
 
-						if(confirm(res)){
-							window.location.href='/my/cart';
+		function closeModal() {
+			var modal = document.getElementById("myModal");
+			modal.style.display = "none";
+		}
+
+		function deleteReview(reviewId) {
+			if (confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
+				$.ajax({
+					type: "DELETE",
+					url: "/shopReview/" + reviewId,
+					success: function (response) {
+						alert(response);
+						location.reload();
+					},
+					error: function (xhr, status, error) {
+						alert("리뷰 삭제에 실패했습니다.");
+					}
+				});
+			}
+		}
+
+		$(document).ready(function () {
+			$('#cartForm').on('submit', function (event) {
+				event.preventDefault();
+
+				$.ajax({
+					type: 'POST',
+					url: '/auth/cart',
+					data: $(this).serialize(),
+					success: function (res) {
+						if (confirm(res)) {
+							window.location.href = '/my/cart';
 						}
 					},
-					//로그인 페이지로 이동? ㄴㄴ?
-					error:function(xhr, status, error){
-						if(xhr.status == 401){
+					error: function (xhr, status, error) {
+						if (xhr.status == 401) {
 							var msg = xhr.responseText;
-								if(confirm(msg)){
-									window.location.href='/auth/login';
+							if (confirm(msg)) {
+								window.location.href = '/auth/login';
 							}
 						}
 					}

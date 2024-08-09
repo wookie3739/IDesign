@@ -1,38 +1,45 @@
 package com.my.interrior.client.shop;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.my.interrior.client.user.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity(name = "shop_review")
+@Getter
+@Setter
 public class ShopReviewEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long shopReviewNo;
 	
-	@Column(name = "shop_revice_title")
-	private String shopReviewTitle;
-	
 	@Column(name = "shop_review_created")
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	private LocalDate shopReviewCreated;
+    private LocalDateTime shopReviewCreated;
 	
 	@Column(columnDefinition = "TEXT" , name = "shop_review_content")
-	private String shopReviceContent;
+	private String shopReviewContent;
 	
 	@Column(name = "shop_review_star_rating")
 	private double shopReviewStarRating;
 	
-	@Column(name = "shop_review_url")
-	private String shopReviewUrl;
+	@ManyToOne
+	@JoinColumn(name = "u_Id", referencedColumnName = "u_id")
+	private UserEntity user;
 	
-	@Column(name = "shop_review_author")
-	private String shopReviewAuthor;
+	@ManyToOne
+	@JoinColumn(name = "shop_no")
+	private ShopEntity shopEntity;
 }

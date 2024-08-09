@@ -127,7 +127,7 @@ public class ReviewController {
 		reviewService.updateReview(rNo, title, category, content, starRating, files, mainPhoto);
 		return "redirect:/auth/evaluation";
 	}
-	
+	//리뷰 삭제
 	@PostMapping("/review_delete")
 	public String reviewDelete(@RequestParam("rNo") Long rNo) {
 		reviewService.deleteReview(rNo);

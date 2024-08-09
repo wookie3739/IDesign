@@ -25,6 +25,26 @@
 				</a>
 			</div>
 		</div>
+		
+		<form method="get" action="/auth/search">
+		            <label for="shopTitle">Title:</label>
+		            <input type="text" id="shopTitle" name="shopTitle" th:value="${shopTitle}">
+
+					<label for="shop-category">카테고리 선택:</label>
+										<select id="shop-category" name="shopCategory">
+											<option value="디퓨저">디퓨저</option>
+											<option value="가구">가구</option>
+											<option value="벽지">벽지</option>
+											<option value="타일">타일</option>
+										</select>
+		            <label for="minPrice">Min Price:</label>
+		            <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}">
+
+		            <label for="maxPrice">Max Price:</label>
+		            <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}">
+
+		            <button type="submit">Search</button>
+		        </form>
 
 		<!-- 페이징 링크 -->
 		<div class="pagination">

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<style>
+	 body {
+        font-family: Arial, sans-serif;
+        background-color: #f6f3ff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      a {
+        color: #000;
+      }
+      .login-container {
+        width: 320px;
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .login-container h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .login-form label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      .login-form input {
+        width: calc(100% - 22px);
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      .login-form button {
+        width: 100%;
+        padding: 15px 0;
+        background: #6633ff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 32px;
+      }
+</style>
+</head>
+<body>
+	<div class="login-container">
+		<h1>관리자 로그인</h1>
+ <form
+        class="login-form"
+        method="post"
+        action="/auth/adminlogin"
+        onsubmit="return validateForm()"
+      >
+        <!-- 사용자 입력 필드 -->
+        <label for="UId">아이디</label>
+        <input type="text" id="UId" name="UId" />
+        <label for="UPw" style="margin-top: 15px">비밀번호</label>
+        <input type="password" id="UPw" name="UPw" />
+        <!-- 로그인 버튼 -->
+        <button type="submit">로그인</button>
+      </form>
+      </div>
+      <!-- JavaScript를 사용하여 알림창 표시 -->
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      // 페이지 로드 시 알림창 표시
+      window.onload = function () {
+        var errorMessage = document.querySelector(".error-message");
+		var cartMsg = /*[[${cartMsg}]]*/'';
+		
+		if(cartMsg){
+				alert(cartMsg);
+				window.location.href='/auth/login';
+			
+		}
+		
+        if (errorMessage && errorMessage.innerText.trim() !== "") {
+          alert(errorMessage.innerText.trim());
+        }
+      };
+      /*]]>*/
+    </script>
+</body>
+
+</html>

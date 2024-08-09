@@ -417,6 +417,7 @@
 				window.location.href="/auth/shopList";
 			}
 			
+
 			//장바구니 선택 삭제
 			function removeItem(button){
 				var CNo = button.closest('.cart-item').querySelector('#cart-no').value;
@@ -433,7 +434,134 @@
 					},
 					error: function(xhr, status, error){
 						console.log("에러 발생: ", error);
+			var discountedAmount = 0;
+			var couponNo = 0;
+			$(document).ready(function () {
+				applyCoupon();
+
+				$('.orderBtn').on("click", function () {
+					var cartSize = $('#cart-size').val();
+					var buyerName = $('#recipient-name').val();
+					var phone = $('#phone').val();
+					var email = $('#email').val();
+					var address = $('#sample4_roadAddress').val() + " " + $('#sample4_detailAddress').val();
+					var postcode = $('#sample4_postcode').val();
+					var merchantUId = `payment-${Math.random().toString(36).substr(2, 9)}`; // 대체 UUID
+					var message = $('#message').val();
+
+					var finalPayText = $('#finalPay').text();
+					var price = parseInt(finalPayText.replace(/[^\d]/g, ''), 10);
+					console.log("amount: ", price);
+
+					var firstProductTitle = $('.product-title').first().text();
+					cartSize = parseInt(cartSize);
+					var shopTitle = firstProductTitle;
+
+					if (cartSize > 1) {
+						shopTitle += " 외 " + (cartSize - 1) + "건";
 					}
+
+					var IMP = window.IMP;
+					IMP.init("imp64382832");
+
+
+					// 날짜 형식 변환 함수
+					function formatDate(dateStr) {
+						var date = new Date(dateStr);
+						var year = date.getFullYear();
+						var month = ("0" + (date.getMonth() + 1)).slice(-2);
+						var day = ("0" + date.getDate()).slice(-2);
+						return `${year}-${month}-${day}`;
+					}
+
+					IMP.request_pay({
+						pg: "html5_inicis",
+						pay_method: "card",
+						merchant_uid: merchantUId,
+						name: shopTitle,
+						amount: "10",
+						buyer_email: email,
+						buyer_name: buyerName,
+						buyer_tel: phone,
+						buyer_addr: address,
+						buyer_postcode: postcode
+					}, function (res) {
+						if (res.success) {
+							$.when(
+								$.ajax({
+									url: '/save/payment',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										merchantUId: res.merchant_uid,
+										cardName: res.card_name,
+										name: shopTitle,
+										paidAmount: res.paid_amount,
+										payMethod: res.pay_method,
+										paidAt: formatDate(res.paid_at),
+										status: res.status,
+										success: res.success
+									})
+								}),
+								$.ajax({
+									url: '/save/shipment',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										buyerName: res.buyer_name,
+										buyerEmail: res.buyer_email,
+										buyerAddr: res.buyer_addr,
+										buyerPostcode: res.buyer_postcode,
+										buyerTel: res.buyer_tel,
+										message: message
+									})
+								})
+							).done(function (paymentRes, shipmentRes) {
+								$.when(
+									
+								$.ajax({
+									url: '/payment/info',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										paymentInfo: paymentRes[0],
+										shipmentInfo: shipmentRes[0]
+									})
+								}),
+								
+								$.ajax({
+									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
+									// 안 썼을 때는 쿠폰에 date가 null임
+									url:'/coupon/clear',
+									type:'PATCH',
+									data:{
+										couponNo:couponNo
+									}
+								}),
+								$.ajax({
+									//장바구니 전부 삭제
+									url:'/delete/all/cart',
+									type:'DELETE'
+								})
+								).done(function(res1, response, res2){
+									
+									window.location.href = "/payment/info";
+									
+								}).fail(function(jqXHR, textStatus, errorThrown){
+									//실패 시
+									console.log("쿠폰 변경 실패:", textStatus, errorThrown);
+								});
+								//이제 여기서 장바구니 지우고 쿠폰 쓴 건 지워야됨.
+								//장바구니 지우는 건 둘째치고 /payment/info에서 쿠폰을 status를 활용해서
+								//구현해보자.(이미 사용한 쿠폰입니다.) 이런 식으로 ㄱㄱㄱ
+
+							}).fail(function (jqXHR, textStatus, errorThrown) {
+								console.log("요청 실패: ", textStatus, errorThrown);
+							});
+						} else {
+							console.log("실패: ", res);
+						}
+					});
 				});
 			}
 			

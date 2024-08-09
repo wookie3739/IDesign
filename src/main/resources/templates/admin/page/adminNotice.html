@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="/css/adminPage.css" />
+    <style>
+        .ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+    <div class="main-content">
+        <header>
+            <h1>공지사항 리스트</h1>
+        </header>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>작성일</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="notice : ${notices}">
+                        <td th:text="${notice.notTitle}"></td>
+                        <td class="ellipsis" th:text="${#strings.abbreviate(notice.notContent, 50)}"></td>
+                        <td th:text="${#temporals.format(notice.notRegisteredDate, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td><button type="button" class="delete-btn" th:attr="onclick=|deleteNotice(${notice.notNo})|">삭제</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <a href="/board/notice/write">공지사항 작성</a>
+        </div>
+        <div class="pagination">
+            <a th:href="@{/admin/page/adminNotice(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{/admin/page/adminNotice(page=${i})}" th:classappend="${i == currentPage} ? 'active'" th:text="${i + 1}">1</a>
+            </span>
+            <a th:href="@{/admin/page/adminNotice(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+        </div>
+    </div>
+    <script>
+        function deleteNotice(noticeNo) {
+            if (confirm("정말로 이 공지사항을 삭제하시겠습니까?")) {
+                fetch('/deleteNotice?noticeNo=' + noticeNo, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("공지사항이 삭제되었습니다.");
+                        location.reload();
+                    } else {
+                        alert("공지사항 삭제에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("공지사항 삭제 중 오류가 발생했습니다.");
+                });
+            }
+        }
+    </script>
+</body>
+</html>

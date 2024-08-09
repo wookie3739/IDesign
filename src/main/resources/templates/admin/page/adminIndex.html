@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="/css/adminPage.css" />
+    
+</head>
+<body>
+    <div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+    <div class="main-content">
+        <header>
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>ADMIN</span>
+                <img src="path_to_user_icon" alt="User Icon">
+            </div>
+        </header>
+        <div class="cards">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">방문자 수</div>
+                    <div class="card-number"></div>
+                    <div class="card-date">(2023/11/15)</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">회원 수</div>
+                    <div class="card-number" th:text="${userCount}"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">상점 게시글 수</div>
+                    <div class="card-number" th:text="${shopCount}"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title">리뷰 수</div>
+                    <div class="card-number" th:text="${reviewCount}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
